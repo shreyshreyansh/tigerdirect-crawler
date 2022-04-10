@@ -5,8 +5,8 @@ const router = express.Router();
 const { crawlController } = require('../controllers');
 
 // routes
-router.get('/', (req, res) => {
-  crawlController.crawlReviews(req, res);
+router.get('/', (req, res, next) => {
+  crawlController.crawlReviews(req, res, next);
 });
 
 module.exports = router;
