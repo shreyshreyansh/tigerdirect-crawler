@@ -8,7 +8,7 @@ const app = express();
 const { healthRouter, crawlRouter } = require('./routes');
 
 // middlewares
-app.use('/heath', healthRouter);
+app.use('/health', healthRouter);
 app.use('/crawl', crawlRouter);
 
 app.listen('8080', () => {
