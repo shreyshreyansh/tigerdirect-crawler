@@ -1,19 +1,12 @@
 'use strict';
 
-const express = require('express');
+const app = require('./app');
 
-const app = express();
+// start listening on defined port
+const start = async () => {
+  app.listen(process.env.PORT || '8080', () => {
+    console.log(`App listening on port ${process.env.PORT || 8080}`);
+  });
+};
 
-// routers
-const { healthRouter, crawlRouter } = require('./routes');
-
-// middlewares
-const errorHandler = require('./middlewares/error-handler');
-
-app.use('/health', healthRouter);
-app.use('/crawl', crawlRouter);
-app.use(errorHandler);
-
-app.listen('8080', () => {
-  console.log('App listening on port 8080');
-});
+start();
