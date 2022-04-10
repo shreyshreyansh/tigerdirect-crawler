@@ -1,3 +1,6 @@
+/**
+ * error class to bad request error by user
+ */
 module.exports = class BadRequestError extends Error {
   statusCode = 400;
 

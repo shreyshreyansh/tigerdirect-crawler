@@ -1,10 +1,13 @@
-module.exports = class BadRequestError extends Error {
+/**
+ * error class to handle puppeteer configuration error
+ */
+module.exports = class PuppeteerConfigureError extends Error {
   statusCode = 503;
 
   constructor(message) {
     super(message);
 
-    Object.setPrototypeOf(this, BadRequestError.prototype);
+    Object.setPrototypeOf(this, PuppeteerConfigureError.prototype);
   }
 
   serializeErrors() {

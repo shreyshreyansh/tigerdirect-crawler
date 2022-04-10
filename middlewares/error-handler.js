@@ -1,6 +1,7 @@
 const BadRequestError = require('../errors/bad-request-error');
 const PuppeteerConfigureError = require('../errors/puppeteer-configure-error');
 
+// error handler middlware
 const errorHandler = (err, req, res, next) => {
   console.error('Error Handling Middleware called', err);
 

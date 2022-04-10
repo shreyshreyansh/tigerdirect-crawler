@@ -1,3 +1,8 @@
+/**
+ *
+ * @param {*} string url
+ * @returns true if url is valid and false when invalid
+ */
 module.exports = (string) => {
   let url;
 
