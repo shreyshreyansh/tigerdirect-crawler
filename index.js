@@ -4,10 +4,12 @@ const express = require('express');
 
 const app = express();
 
-// routes
-app.get('/health', (req, res) => {
-  res.send('OK');
-});
+// routers
+const { healthRouter, crawlRouter } = require('./routes');
+
+// middlewares
+app.use('/heath', healthRouter);
+app.use('/crawl', crawlRouter);
 
 app.listen('8080', () => {
   console.log('App listening on port 8080');
