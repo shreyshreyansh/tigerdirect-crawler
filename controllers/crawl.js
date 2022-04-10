@@ -1,5 +1,4 @@
 const puppeteer = require('puppeteer');
-
 /**
  * 
  * @param {*} req Link of the tigerdirect product
@@ -11,6 +10,12 @@ const puppeteer = require('puppeteer');
                 - Reviewer Name
  */
 exports.crawlReviews = async (req, res) => {
+  const { url } = req.query;
+
+  console.log('🎪');
+
+  console.log('⏰ ~ file: crawl.js ~ Crawling reviews starting for', url);
+
   console.log('⏰ ~ file: crawl.js ~ Launching browser...');
 
   // configure a browser
@@ -28,28 +33,72 @@ exports.crawlReviews = async (req, res) => {
   console.log('⏰ ~ file: crawl.js ~ URL opening...');
 
   // Go to https://www.tigerdirect.com/
-  await page.goto('https://www.tigerdirect.com/');
+  await page.goto(url);
 
   console.log('✅ ~ file: crawl.js ~ URL opening successful');
 
   console.log('⏰ ~ file: crawl.js ~ DOM loading...');
 
   // wait for the required selector to load
-  await page.waitForSelector('.userGreeting');
+  // await page.waitForSelector('.userGreeting');
 
   console.log('✅ ~ file: crawl.js ~ DOM loading successful');
-
-  console.log('⏰ ~ file: crawl.js ~ Grabbing selector...');
-
-  // grab the selector
-  let element = await page.$('.userGreeting');
-
-  console.log('✅ ~ file: crawl.js ~ Grabbing successful');
 
   console.log('⏰ ~ file: crawl.js ~ Extracting value...');
 
   // extract value from the grabbed selector
-  let value = await page.evaluate((el) => el.textContent, element);
+  let value = await page.evaluate(() => {
+    // get the name of the product
+    const productName = document.querySelector('.pdp-info h1');
+
+    // get the overall rating of the product
+    const overallRating = document.querySelector('.score');
+
+    // ratings of the product
+    const reviewsNodeList = document.querySelectorAll(
+      '#customerReviews .review'
+    );
+    // convert node list by querySelectorAll to array
+    const reviews = Array.from(reviewsNodeList);
+
+    return {
+      productName: productName && productName.innerText,
+      overallRating:
+        overallRating && overallRating.innerText
+          ? Number(overallRating.innerText)
+          : 0,
+      reviews: reviews.map((review) => {
+        let commentHeading = review.querySelector('.rightCol blockquote h6');
+
+        let commentMessage = review.querySelector('.rightCol blockquote p');
+
+        let rating = review.querySelector(
+          '.leftCol .itemReview .itemRating strong'
+        );
+
+        let reviewerDetailsNodeList = review.querySelectorAll(
+          '.leftCol .reviewer dd'
+        );
+        const reviewerDetails = Array.from(reviewerDetailsNodeList);
+
+        return {
+          comment: {
+            heading: commentHeading && commentHeading.innerText,
+            message: commentMessage && commentMessage.innerText,
+          },
+          rating: rating && rating.innerText ? Number(rating.innerText) : 0,
+          reviewDate:
+            reviewerDetails.length >= 2 &&
+            reviewerDetails[1] &&
+            reviewerDetails[1].innerText,
+          reviewerName:
+            reviewerDetails.length >= 1 &&
+            reviewerDetails[0] &&
+            reviewerDetails[0].innerText,
+        };
+      }),
+    };
+  });
 
   console.log('✅ ~ file: crawl.js ~ Value extraction successful');
 
@@ -59,6 +108,10 @@ exports.crawlReviews = async (req, res) => {
   browser.close();
 
   console.log('✅ ~ file: crawl.js ~ Browser closing successful');
+
+  console.log('✅ ~ file: crawl.js ~ Crawling review successful');
+
+  console.log('🥇');
 
   res.status(200).send(value);
 };
